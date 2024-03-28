@@ -18,7 +18,7 @@ namespace Covid19ManagmentSystem.Web.Models
         [DataType(DataType.Date)]
         public DateTime? BirthDate { get; set; } = default(DateTime?);
         [Required]
-        [RegularExpression(@"^\d{1,10}$", ErrorMessage = "Phone number must be between 1 to 10 digits.")]
+        [RegularExpression(@"^\d{7,10}$", ErrorMessage = "Phone number must be between 7 to 10 digits.")]
         public string Phone { get; set; }
         [Required]
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Mobile phone must be exactly 10 digits.")]

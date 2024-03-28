@@ -72,7 +72,10 @@ namespace Covid19ManagmentSystem.Web.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-
+    
+    /// <summary>
+    /// New object that was created for modeling the reports
+    /// </summary>
     public class PatientStatistics
     {
         public List<(DateTime Date, int SickCount)> SickPatientsCountPerDay { get; set; }

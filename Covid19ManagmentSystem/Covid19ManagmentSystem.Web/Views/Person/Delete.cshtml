@@ -12,37 +12,37 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PersonId)
+           Patient ID
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.PersonId)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
+            First name
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.FirstName)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
+            Last name
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.LastName)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BirthDate)
+            Patient birth-date
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.BirthDate)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Phone)
+            Phone number
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Phone)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PrivatePhone)
+            Mobile phone
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.PrivatePhone)
@@ -65,9 +65,6 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.streetNumber)
         </dd>
-        <dt class="col-sm-2">
-            Photo
-        </dt>
         
         @for (var i = 0; i < Model.Vaccinations.Count; i++)
         {
