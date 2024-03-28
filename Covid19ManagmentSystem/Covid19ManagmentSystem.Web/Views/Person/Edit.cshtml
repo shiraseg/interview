@@ -186,6 +186,7 @@
                     if (vaccinationDate > currentDate) {
                         event.preventDefault();
                         dateInput.setCustomValidity("Vaccination date cannot be in the future.");
+                        showAlert("Vaccination date cannot be in the future.");
                         return false;
                     } else {
                         dateInput.setCustomValidity("");
@@ -200,6 +201,7 @@
                     if (recoveryDate > currentDate) {
                         event.preventDefault();
                         row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("Recovery date cannot be in the future.");
+                        showAlert("Recovery date cannot be in the future.");
                         return false;
                     } else {
                         row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("");
@@ -207,6 +209,7 @@
                     if (recoveryDate <= startDate) {
                         event.preventDefault();
                         row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("Recovery date must be after start date.");
+                        showAlert("Recovery date must be after start date.");
                         return false;
                     } else {
                         row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("");
@@ -217,6 +220,9 @@
             });
         });
 
+        function showAlert(message) {
+            alert(message);
+        }
 
         function AddItem(btn) {
             var table = document.getElementById('ExpTable');// we gave the table an id
