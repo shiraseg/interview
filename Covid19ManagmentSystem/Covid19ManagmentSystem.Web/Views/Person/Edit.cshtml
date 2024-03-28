@@ -1,0 +1,210 @@
+﻿@model Covid19ManagmentSystem.Web.Models.Person
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Person</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="PersonId" class="control-label"></label>
+                <input asp-for="PersonId" class="form-control" />
+                <span asp-validation-for="PersonId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label"></label>
+                <input asp-for="BirthDate" class="form-control" />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PrivatePhone" class="control-label"></label>
+                <input asp-for="PrivatePhone" class="form-control" />
+                <span asp-validation-for="PrivatePhone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Street" class="control-label"></label>
+                <input asp-for="Street" class="form-control" />
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="streetNumber" class="control-label"></label>
+                <input asp-for="streetNumber" class="form-control" />
+                <span asp-validation-for="streetNumber" class="text-danger"></span>
+            </div>
+            <div class="row">
+
+                <div>
+                    <table id="ExpTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Vaccine type
+                                </th>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    <button id="btnadd" type="button" class="btn btn-sm btn alert-secondary visible"
+                                            onclick="AddItem(this)">
+                                        Add
+                                    </button>
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Vaccinations.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @*  @Html.EditorFor(x=>x.Vaccinations[i].Type,new{htmlAttributes =new{@class="form-control"}}) *@
+                                        <select asp-for="@Model.Vaccinations[i].Type" class="form-control" asp-items="Html.GetEnumSelectList<VaccineType>()" style="width: 100%;">
+                                            <option value="default" selected>Choose out of following options</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(x => x.Vaccinations[i].Date, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <table id="ExpStatusTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    start date
+                                </th>
+                                <th>
+                                    recovery date
+                                </th>
+                                <th>
+                                    <button id="btnaddstatus" type="button" class="btn btn-sm btn alert-secondary visible"
+                                            onclick="AddItem(this)">
+                                        Add
+                                    </button>
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.CovidStatuses.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(x => x.CovidStatuses[i].StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(x => x.CovidStatuses[i].RecoveryDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-4"></div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+
+      
+
+
+        function DeleteItem(btn) {
+            $(btn).closest('tr').remove();
+        }
+
+        function AddItem(btn) {
+            var table = document.getElementById('ExpTable');// we gave the table an id
+            if (btn.id == 'btnaddstatus')
+                table = document.getElementById('ExpStatusTable');
+            else
+                table = document.getElementById('ExpTable');
+
+            var rows = table.getElementsByTagName('tr'); //we get the rows of the table
+
+            if (rows.length - 1 != 4 || btn.id == 'btnaddstatus') //start from 1
+            {
+                var rowOuterHtml = rows[rows.length - 1].outerHTML; //the last row, but we are clonign last row, whci gives them all same id-PROBLEM!
+
+                // teh follwing lines save the solution
+                var lastrowIdx = rows.length - 2
+                var nextrowIdx = eval(lastrowIdx) + 1;// incrementing the index so that it won't stay by the last row
+
+                // rowouterHtml holds the source of the last row of the table
+                // so we are replacing the old index with the new index
+                rowOuterHtml = rowOuterHtml.replaceAll('_' + lastrowIdx + '_', '_' + nextrowIdx + '_');
+                rowOuterHtml = rowOuterHtml.replaceAll('[' + lastrowIdx + ']', '[' + nextrowIdx + ']');
+                rowOuterHtml = rowOuterHtml.replaceAll('-' + lastrowIdx, '-' + nextrowIdx);
+
+                // then we attach the new row to the table
+                var newRow = table.insertRow();
+                newRow.innerHTML = rowOuterHtml;
+
+
+
+                var x = document.getElementsByTagName("input");
+
+                for (var cnt = 0; cnt < x.length; cnt++) {
+                    if (x[cnt].type == "text" && x[cnt].id.indexOf('_' + nextRowIdx + '_') > 0)// check if it is a textcontorl
+                        x[cnt].value = ' ';
+                    else if (x[cnt].type == "number" && x[cnt].id.indexOf('_' + nextrowIdx + '_') > 0)// check if it is a textcontorl
+                        x[cnt].value = ' ';
+                }
+            }
+
+        }
+
+    </script>
+}

@@ -1,0 +1,69 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+@* <html>
+<body>
+
+    <h2>Sick Patients Count Per Day</h2>
+
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Sick Count</th>
+        </tr>
+        @foreach (var item in Model.SickPatientsCountPerDay)
+        {
+            <tr>
+                <td>@item.Item1.ToString("yyyy-MM-dd")</td>
+                <td>@item.Item2</td>
+            </tr>
+        }
+    </table>
+
+    <p>Number of Not Vaccinated Patients: @Model.PersonsWithNoVaccinationsCount</p>
+
+</body>
+</html> *@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+    <h2>Sick Patients Count Per Day</h2>
+
+    <div id="myPlot" style="width:100%;max-width:700px"></div>
+
+    <p>Number of Not Vaccinated Patients: @Model.PersonsWithNoVaccinationsCount</p>
+
+    <script>
+        // Get data from the view model
+        var dates = [];
+        var amounts = [];
+        @foreach (var item in Model.SickPatientsCountPerDay)
+        {
+            @:dates.push('@item.Item1.ToString("yyyy-MM-dd")');
+            @:amounts.push('@item.Item2');
+        }
+
+            // Create data array for Plotly chart
+            var data = [{
+            x: dates,
+            y: amounts,
+            type: "bar",
+            marker: { color: "rgba(0, 0, 255, 0.6)" }
+        }];
+
+        // Layout for Plotly chart
+        var layout = { title: "Sick Patients Count Per Day", xaxis: { title: "Date" }, yaxis: { title: "Sick Count" } };
+
+        // Create the Plotly chart
+        Plotly.newPlot("myPlot", data, layout);
+    </script>
+
+</body>
+</html>
