@@ -16,6 +16,7 @@ namespace Covid19ManagmentSystem.Web.Models
         public string LastName { get; set; }
         [Required]
         [DataType(DataType.Date)]
+        [CustomValidation(typeof(Person), "ValidateBirthDate")]
         public DateTime? BirthDate { get; set; } = default(DateTime?);
         [Required]
         [RegularExpression(@"^\d{7,10}$", ErrorMessage = "Phone number must be between 7 to 10 digits.")]
@@ -33,6 +34,16 @@ namespace Covid19ManagmentSystem.Web.Models
         // Note: These properties are not mapped to the database
         public virtual List<Vaccination>? Vaccinations { get; set; } = new List<Vaccination>();
         public virtual List<CovidStatus>? CovidStatuses { get; set; } = new List<CovidStatus>();
+
+        public static ValidationResult ValidateBirthDate(DateTime? birthDate, ValidationContext context)
+        {
+            if (birthDate.HasValue && birthDate.Value.Date > DateTime.Today)
+            {
+                return new ValidationResult("Birth date cannot be in the future.", new[] { context.MemberName });
+            }
+            return ValidationResult.Success;
+        }
     }
+   
 }
 

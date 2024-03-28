@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form id="createForm" asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Patient ID</label>
@@ -30,8 +30,9 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Patient birth-date</label>
-                <input asp-for="BirthDate" class="form-control" />
+                <input id="BirthDate" asp-for="BirthDate" class="form-control" />
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
+                <span class="text-danger"  id="errorMessage" style="display: none;"></span>
             </div>
           
             <div class="form-group">
@@ -85,13 +86,12 @@
                     {
                         <tr>
                             <td>
-                               @*  @Html.EditorFor(x=>x.Vaccinations[i].Type,new{htmlAttributes =new{@class="form-control"}}) *@
                                     <select asp-for="@Model.Vaccinations[i].Type" class="form-control" asp-items="Html.GetEnumSelectList<VaccineType>()" style="width: 100%;">
                                         <option value="default" selected>Choose out of following options</option>
                                     </select>
                             </td>
                             <td>
-                                @Html.EditorFor(x => x.Vaccinations[i].Date, new { htmlAttributes = new { @class = "form-control" } })
+                                <input asp-for="@Model.Vaccinations[i].Date" class="form-control" />
                             </td>
                             <td>
                             </td>
@@ -123,10 +123,10 @@
                         {
                             <tr>
                                 <td>
-                                     @Html.EditorFor(x=>x.CovidStatuses[i].StartDate,new{htmlAttributes =new{@class="form-control"}})             
+                                     <input asp-for="@Model.CovidStatuses[i].StartDate" class="form-control" />            
                                 </td>
                                 <td>
-                                    @Html.EditorFor(x => x.CovidStatuses[i].RecoveryDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    <input asp-for="@Model.CovidStatuses[i].RecoveryDate" class="form-control" />
                                 </td>
                                 <td>
                                 </td>
@@ -147,11 +147,66 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
-    <script type="text/javascript">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("createForm").addEventListener("submit", function (event) {
+                var birthDate = new Date(document.getElementById("BirthDate").value);
+                var currentDate = new Date();
 
-       
+                // Check if birthdate is in the future
+
+                if (birthDate > currentDate) {               
+                    event.preventDefault();
+                    document.getElementById("BirthDate").setCustomValidity("Birth date cannot be in the future.");
+                    document.getElementById("errorMessage").textContent = "Birth date cannot be in the future.";
+                    document.getElementById("errorMessage").style.display = "block";
+                    return false;
+                } else {
+                    document.getElementById("BirthDate").setCustomValidity("");
+                    document.getElementById("errorMessage").style.display = "none";
+                }
+
+                // Check if vaccination dates are in the future
+                var vaccinationDates = document.querySelectorAll("#ExpTable input[type='date']");
+                vaccinationDates.forEach(function (dateInput) {
+                    var vaccinationDate = new Date(dateInput.value);
+                    if (vaccinationDate > currentDate) {
+                        event.preventDefault();
+                        dateInput.setCustomValidity("Vaccination date cannot be in the future.");
+                        return false;
+                    } else {
+                        dateInput.setCustomValidity("");
+                    }
+                });
+
+                // Check if recovery date is in the future and if recovery date is after start date
+                var covidStatusRows = document.querySelectorAll("#ExpStatusTable tbody tr");
+                covidStatusRows.forEach(function (row) {
+                    var startDate = new Date(row.querySelector("input[name$='.StartDate']").value);
+                    var recoveryDate = new Date(row.querySelector("input[name$='.RecoveryDate']").value);
+                    if (recoveryDate > currentDate) {
+                        event.preventDefault();
+                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("Recovery date cannot be in the future.");
+                        return false;
+                    } else {
+                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("");
+                    }
+                    if (recoveryDate <= startDate) {
+                        event.preventDefault();
+                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("Recovery date must be after start date.");
+                        return false;
+                    } else {
+                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("");
+                    }
+                });
+
+                return true;
+            });
+        });
 
 
 
@@ -162,7 +217,7 @@
             else
                 table = document.getElementById('ExpTable');
 
-           var rows = table.getElementsByTagName('tr'); //we get the rows of the table
+            var rows = table.getElementsByTagName('tr'); //we get the rows of the table
 
             if (rows.length - 1 != 4 || btn.id == 'btnaddstatus') //start from 1
             {
@@ -174,22 +229,19 @@
 
                 // rowouterHtml holds the source of the last row of the table
                 // so we are replacing the old index with the new index
-                rowOuterHtml = rowOuterHtml.replaceAll('_' + lastrowIdx + '_', '_' + nextrowIdx + '_');
+                rowOuterHtml = rowOuterHtml.replaceAll('' + lastrowIdx + '', '' + nextrowIdx + '');
                 rowOuterHtml = rowOuterHtml.replaceAll('[' + lastrowIdx + ']', '[' + nextrowIdx + ']');
                 rowOuterHtml = rowOuterHtml.replaceAll('-' + lastrowIdx, '-' + nextrowIdx);
 
                 // then we attach the new row to the table
                 var newRow = table.insertRow();
                 newRow.innerHTML = rowOuterHtml;
-
-
-
                 var x = document.getElementsByTagName("input");
 
                 for (var cnt = 0; cnt < x.length; cnt++) {
-                    if (x[cnt].type == "text" && x[cnt].id.indexOf('_' + nextRowIdx + '_') > 0)// check if it is a textcontorl
+                    if (x[cnt].type == "text" && x[cnt].id.indexOf('' + nextRowIdx + '') > 0)// check if it is a textcontorl
                         x[cnt].value = ' ';
-                    else if (x[cnt].type == "number" && x[cnt].id.indexOf('_' + nextrowIdx + '_') > 0)// check if it is a textcontorl
+                    else if (x[cnt].type == "number" && x[cnt].id.indexOf('' + nextrowIdx + '') > 0)// check if it is a textcontorl
                         x[cnt].value = ' ';
                 }
             }
@@ -198,4 +250,6 @@
 
     </script>
 }
+
+
     

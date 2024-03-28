@@ -145,17 +145,11 @@ namespace Covid19ManagmentSystem.Web.Controllers
         // GET: Person/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (person == null)
-            {
-                return NotFound();
-            }
+            Person person = _context.Persons
+               .Include(e => e.Vaccinations)
+               .Include(e => e.CovidStatuses)
+               .Where(e => e.Id == id).FirstOrDefault();
+            return View(person);
 
             return View(person);
         }
