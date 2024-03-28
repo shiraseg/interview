@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form id="createForm" asp-action="Create" method="post">
+        <form id="createForm" asp-action="Create" method="post" onsubmit="return validateDates()">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Patient ID</label>
@@ -152,62 +152,50 @@
     }
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("createForm").addEventListener("submit", function (event) {
-                var birthDate = new Date(document.getElementById("BirthDate").value);
-                var currentDate = new Date();
 
-                // Check if birthdate is in the future
+        function validateDates() {
 
-                if (birthDate > currentDate) {               
-                    event.preventDefault();
-                    document.getElementById("BirthDate").setCustomValidity("Birth date cannot be in the future.");
-                    document.getElementById("errorMessage").textContent = "Birth date cannot be in the future.";
-                    document.getElementById("errorMessage").style.display = "block";
-                    return false;
-                } else {
-                    document.getElementById("BirthDate").setCustomValidity("");
-                    document.getElementById("errorMessage").style.display = "none";
+            var birthDate = new Date(document.getElementById("BirthDate").value);
+            var covidStatusRows = document.querySelectorAll("#ExpStatusTable tbody tr");
+            var vaccinationRows = document.querySelectorAll("#ExpTable tbody tr");
+            var currentDate = new Date();
+
+            if (birthDate > currentDate) {
+                alert("Patient birth-date cannot be in the future.");
+                return false; // Prevent form submission
+            }
+
+            for (var i = 0; i < covidStatusRows.length; i++) {
+                var startDateInput = covidStatusRows[i].querySelector("input[name$='.StartDate']");
+                var recoveryDateInput = covidStatusRows[i].querySelector("input[name$='.RecoveryDate']");
+
+                var startDate = new Date(startDateInput.value);
+                var recoveryDate = new Date(recoveryDateInput.value);
+                if (recoveryDate > currentDate || startDate > currentDate) {
+                    alert("Covid positive/negetive dates cannot be in the future.");
+                    return false; // Prevent form submission
+                }
+                if (recoveryDate <= startDate) {
+                    alert("Recovery date must be after start date.");
+                    return false; // Prevent form submission
+                }
+            }
+
+            for (var i = 0; i < vaccinationRows.length; i++) {
+                var dateInput = vaccinationRows[i].querySelector("input[name$='.Date']");
+                var optionInput = vaccinationRows[i].querySelector("input[name$='.Type']");
+                var date = new Date(dateInput.value);
+
+                if (date > currentDate) {
+                    alert("Vaccination date cannot be in the future.");
+                    return false; // Prevent form submission
                 }
 
-                // Check if vaccination dates are in the future
-                var vaccinationDates = document.querySelectorAll("#ExpTable input[type='date']");
-                vaccinationDates.forEach(function (dateInput) {
-                    var vaccinationDate = new Date(dateInput.value);
-                    if (vaccinationDate > currentDate) {
-                        event.preventDefault();
-                        dateInput.setCustomValidity("Vaccination date cannot be in the future.");
-                        return false;
-                    } else {
-                        dateInput.setCustomValidity("");
-                    }
-                });
+            }
 
-                // Check if recovery date is in the future and if recovery date is after start date
-                var covidStatusRows = document.querySelectorAll("#ExpStatusTable tbody tr");
-                covidStatusRows.forEach(function (row) {
-                    var startDate = new Date(row.querySelector("input[name$='.StartDate']").value);
-                    var recoveryDate = new Date(row.querySelector("input[name$='.RecoveryDate']").value);
-                    if (recoveryDate > currentDate) {
-                        event.preventDefault();
-                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("Recovery date cannot be in the future.");
-                        return false;
-                    } else {
-                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("");
-                    }
-                    if (recoveryDate <= startDate) {
-                        event.preventDefault();
-                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("Recovery date must be after start date.");
-                        return false;
-                    } else {
-                        row.querySelector("input[name$='.RecoveryDate']").setCustomValidity("");
-                    }
-                });
-
-                return true;
-            });
-        });
-
+            // If all validations pass, allow form submission
+            return true;
+        }
 
 
         function AddItem(btn) {
@@ -245,7 +233,6 @@
                         x[cnt].value = ' ';
                 }
             }
-
         }
 
     </script>
